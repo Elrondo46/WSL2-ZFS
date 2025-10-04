@@ -1,0 +1,62 @@
+name: Build ZFS for WSL2 Kernel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-zfs:
+    runs-on: ubuntu-latest
+    container:
+      image: nevuly/nevuly-dev-base:arch
+      options: --privileged
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          pacman -Sy --noconfirm git base-devel wget tar ccache autoconf automake libtool pkgconf zlib util-linux
+
+      - name: Download WSL2 Kernel source
+        run: |
+          wget https://github.com/Nevuly/WSL2-Linux-Kernel-Rolling/archive/refs/tags/linux-wsl-stable-6.17.0.tar.gz
+          tar -xvf linux-wsl-stable-6.17.0.tar.gz
+          mv WSL2-Linux-Kernel-Rolling-linux-wsl-6.17.0 kernel
+
+      - name: Prepare Kernel build tree
+        run: |
+          cd kernel
+          make mrproper
+          mkdir -p build
+          cp arch/x86/configs/config-wsl-x86 build/.config
+          make -j$(nproc) O=build bzImage modules prepare modules_prepare scripts
+          chmod -R a+x build/scripts
+          chmod -R a+x scripts
+          grep CONFIG_MODULES build/.config
+
+      - name: Clone OpenZFS
+        run: git clone https://github.com/openzfs/zfs.git
+
+      - name: Build ZFS modules
+        run: |
+          cd zfs
+          ./autogen.sh
+          ./configure --with-linux="$(pwd)/../kernel" --with-linux-obj="$(pwd)/../kernel/build"
+          make -j$(nproc)
+          mkdir -p ../zfs-modules
+          find module -name "*.ko" -exec cp {} ../zfs-modules/ \;
+
+      - name: Package ZFS modules
+        run: |
+          tar -czf zfs-modules-6.12.49.tar.gz zfs-modules
+
+      - name: Upload release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: zfs-modules
+          name: ZFS modules build
+          files: zfs-modules-6.12.49.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
