@@ -50,13 +50,13 @@ jobs:
 
       - name: Package ZFS modules
         run: |
-          tar -czf zfs-modules-6.12.49.tar.gz zfs-modules
+          tar -czf zfs-modules-6.17.0.tar.gz zfs-modules
 
       - name: Upload release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: zfs-modules
           name: ZFS modules build
-          files: zfs-modules-6.12.49.tar.gz
+          files: zfs-modules-6.17.0.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
