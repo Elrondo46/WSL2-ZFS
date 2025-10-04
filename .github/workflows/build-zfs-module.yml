@@ -23,7 +23,7 @@ jobs:
         run: |
           wget https://github.com/Nevuly/WSL2-Linux-Kernel-Rolling/archive/refs/tags/linux-wsl-stable-6.17.0.tar.gz
           tar -xvf linux-wsl-stable-6.17.0.tar.gz
-          mv WSL2-Linux-Kernel-Rolling-linux-wsl-6.17.0 kernel
+          mv WSL2-Linux-Kernel-Rolling-linux-wsl-stable-6.17.0 kernel
 
       - name: Prepare Kernel build tree
         run: |
