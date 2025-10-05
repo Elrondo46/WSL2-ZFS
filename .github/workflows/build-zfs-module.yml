@@ -57,7 +57,7 @@ jobs:
         run: |
           mkdir -p usbipmod
           cd kernel
-          cp -r modinstall/lib/modules/6.17.0-WSL2-STABLE+/kernel/drivers/usb/usbip ../usbipmod/usbip 
+          cp -r kernel/modinstall/lib/modules/6.17.0-WSL2-STABLE+/kernel/drivers/usb/usbip ../usbipmod/usbip 
 
       - name: Package ZFS and USBIP modules
         run: |
