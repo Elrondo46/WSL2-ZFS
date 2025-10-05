@@ -56,7 +56,8 @@ jobs:
       - name: Extract USBIP modules
         run: |
           mkdir -p usbipmod
-          cp -r kernel/modinstall/lib/modules/6.17.0-WSL2-STABLE+/kernel/drivers/usb/usbip usbipmod/usbip 
+          cd kernel
+          cp -r modinstall/lib/modules/6.17.0-WSL2-STABLE+/kernel/drivers/usb/usbip ../usbipmod/usbip 
 
       - name: Package ZFS and USBIP modules
         run: |
