@@ -48,21 +48,9 @@ jobs:
           mkdir -p ../zfs-modules
           find module -name "*.ko" -exec cp {} ../zfs-modules/ \;
 
-      - name: Install kernel modules
-        run: |
-          cd kernel
-          make -j$(nproc) O=build modules_install INSTALL_MOD_PATH=../modinstall
-
-      - name: Extract USBIP modules
-        run: |
-          mkdir -p usbipmod
-          cd kernel
-          cp -r ./modinstall/lib/modules/6.17.0-WSL2-STABLE/kernel/drivers/usb/usbip ../usbipmod/usbip 
-
       - name: Package ZFS and USBIP modules
         run: |
           tar -czf zfs-modules-6.17.0.tar.gz zfs-modules
-          tar -czf usbip-modules-6.17.0.tar.gz usbipmod
 
       - name: Upload release
         uses: softprops/action-gh-release@v2
